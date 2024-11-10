@@ -6,24 +6,14 @@
 MODULE_LICENSE("Dual BSD/GPL");
 
 static kuid_t uid;
-char mybuff[20];
-int l=0;
+
+
 
 static int misc_open(struct inode* inodes, struct file* files){
 	struct task_struct *p=current;
 	uid=p->cred->uid;
 	printk(KERN_INFO "%d\n", uid.val);
-	int tmp=127383;
 	
-	char buf[10];
-	if(tmp==0)buf[0]='0';
-	int cnt=0;
-	while(tmp>0){
-		mybuff[l++]=tmp%10;
-		tmp/=10;
-	}
-	mybuff[l]='\0';
-	printk(KERN_INFO "%s\n", mybuff);
 
 	printk(KERN_INFO "myopen\n");
 	return 0;
@@ -32,6 +22,18 @@ static int misc_open(struct inode* inodes, struct file* files){
 static ssize_t misc_read(struct file *file, char __user *buf, size_t len, loff_t* offset){
 	printk(KERN_INFO "myread\n");
 	//printk(KERN_INFO "%d %d\n",(int)len, (int)*offset);
+	int tmp=12345;
+	char mybuff[20];
+	int l=0;
+	if(tmp==0)buf[0]='0';
+	int cnt=0;
+	while(tmp>0){
+		mybuff[l++]=(char)tmp%10;
+		tmp/=10;
+		printk(KERN_INFO "%d\n", tmp);
+	}
+	mybuff[l]='\0';
+	printk(KERN_INFO "%s\n", mybuff);
 	int left=l-*offset;
 
 	if(left<=len){
