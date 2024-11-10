@@ -1,4 +1,4 @@
-obj-m := lab3.o	
+obj-m := lab8.o	
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
