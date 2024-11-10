@@ -6,8 +6,8 @@
 MODULE_LICENSE("Dual BSD/GPL");
 
 static kuid_t uid;
-char *mybuff;
-int l;
+char mybuff[20];
+int l=0;
 
 static int misc_open(struct inode* inodes, struct file* files){
 	struct task_struct *p=current;
@@ -23,7 +23,7 @@ static int misc_open(struct inode* inodes, struct file* files){
 		tmp/=10;
 	}
 	mybuff[l]='\0';
-	printk(KERN_INFO "%s\n", buf);
+	printk(KERN_INFO "%s\n", mybuff);
 
 	printk(KERN_INFO "myopen\n");
 	return 0;
@@ -81,4 +81,3 @@ static void hello_exit(void){
 
 module_init(hello_init);
 module_exit(hello_exit);
-
