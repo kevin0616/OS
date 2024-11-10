@@ -23,17 +23,22 @@ static ssize_t misc_read(struct file *file, char __user *buf, size_t len, loff_t
 	printk(KERN_INFO "myread\n");
 	//printk(KERN_INFO "%d %d\n",(int)len, (int)*offset);
 	int tmp=12345;
-	char mybuff[20];
 	int l=0;
-	if(tmp==0)buf[0]='0';
-	int cnt=0;
 	while(tmp>0){
-		mybuff[l++]=(char)tmp%10;
+		l++;
 		tmp/=10;
-		printk(KERN_INFO "%d\n", tmp);
 	}
+	char mybuff[20];
+	snprintf(mybuff, sizeof(mybuff), "%d", tmp);
 	mybuff[l]='\0';
-	printk(KERN_INFO "%s\n", mybuff);
+	
+	/*if(tmp==0)buf[0]='0';
+	
+	mybuff[l]='\0';
+	printk(KERN_INFO "%s\n", &mybuff[0]);
+	printk(KERN_INFO "%s\n", &mybuff[1]);
+	printk(KERN_INFO "%s\n", &mybuff[2]);
+	printk(KERN_INFO "%s\n", &mybuff[3]);*/
 	int left=l-*offset;
 
 	if(left<=len){
