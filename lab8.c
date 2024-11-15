@@ -5,40 +5,32 @@
 
 MODULE_LICENSE("Dual BSD/GPL");
 
-static kuid_t uid;
+static int uid;
 
 
 
 static int misc_open(struct inode* inodes, struct file* files){
 	struct task_struct *p=current;
-	uid=p->cred->uid;
-	printk(KERN_INFO "%d\n", uid.val);
-	
-
-	printk(KERN_INFO "myopen\n");
+	uid=p->cred->uid.val;
+	printk(KERN_INFO "%d called misc_open\n", uid);
 	return 0;
 }
 
 static ssize_t misc_read(struct file *file, char __user *buf, size_t len, loff_t* offset){
-	printk(KERN_INFO "myread\n");
-	//printk(KERN_INFO "%d %d\n",(int)len, (int)*offset);
-	int tmp=12345;
+	printk(KERN_INFO "%d called misc_read\n", uid);
+	
+	int tmp=uid;
 	int l=0;
-	while(tmp>0){
-		l++;
-		tmp/=10;
-	}
 	char mybuff[20];
 	snprintf(mybuff, sizeof(mybuff), "%d", tmp);
+	if(tmp==0)l=1;
+	else{
+		while(tmp>0){
+			l++;
+			tmp/=10;
+		}
+	}
 	mybuff[l]='\0';
-	
-	/*if(tmp==0)buf[0]='0';
-	
-	mybuff[l]='\0';
-	printk(KERN_INFO "%s\n", &mybuff[0]);
-	printk(KERN_INFO "%s\n", &mybuff[1]);
-	printk(KERN_INFO "%s\n", &mybuff[2]);
-	printk(KERN_INFO "%s\n", &mybuff[3]);*/
 	int left=l-*offset;
 
 	if(left<=len){
@@ -63,7 +55,7 @@ static struct file_operations my_fops={
 	.open=misc_open,
 	.read=misc_read,
 	.write=0,
-	.release=0
+	.release=0,
 };
 
 static int hello_init(void){
@@ -72,12 +64,14 @@ static int hello_init(void){
 	my_dev.minor=MISC_DYNAMIC_MINOR;
 	my_dev.name="lab8";
 	my_dev.fops=&my_fops;
+	my_dev.mode=0666;
 	
 	retval=misc_register(&my_dev);
 	
 	if(retval)return retval;
-	printk("my:got minor %i\n", my_dev.minor);
-	printk(KERN_INFO "hello\n");
+	printk(KERN_INFO "hello world\n");
+	printk("lab8 got minor %i\n", my_dev.minor);
+	
 	return 0;
 }
 
